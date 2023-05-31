@@ -1,0 +1,30 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 150px;
+}
+
+.container {
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  padding: 24px 16px 16px;
+  border-radius: 8px;
+}
+
+.loginForm {
+  max-width: 300px;
+}
+
+.title {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.button {
+  width: 100%;
+}
+
+.center {
+  display: block;
+  text-align: center;
+}
