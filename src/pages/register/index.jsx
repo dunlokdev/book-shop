@@ -12,9 +12,10 @@ const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const onFinish = async (values) => {
+    const { fullName, email, password, phone } = values;
     try {
       setIsLoading(true);
-      const response = await authApi.register(values);
+      const response = await authApi.register(fullName, email, password, phone);
       if (response?.data?._id) {
         message.success("Đăng ký tài khoản thành công!");
         navigate("/login");
@@ -68,7 +69,10 @@ const Register = () => {
               },
             ]}
           >
-            <Input placeholder="example@gmail.com" />
+            <Input
+              placeholder="example@gmail.com"
+              autoComplete="new-password"
+            />
           </Form.Item>
 
           <Form.Item
@@ -76,7 +80,10 @@ const Register = () => {
             name="password"
             rules={[{ required: true, message: "Vui lòng nhập mật khẩu" }]}
           >
-            <Input.Password placeholder="@testmatkhau123" />
+            <Input.Password
+              placeholder="@testmatkhau123"
+              autoComplete="new-password"
+            />
           </Form.Item>
 
           <Form.Item

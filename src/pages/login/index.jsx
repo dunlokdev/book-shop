@@ -1,11 +1,37 @@
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { Button, Checkbox, Divider, Form, Input } from "antd";
+import { Button, Divider, Form, Input, message, notification } from "antd";
+import { Link, useNavigate } from "react-router-dom";
 import classes from "./login.module.css";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import authApi from "../../api/auth";
 
 const LoginPage = () => {
-  const onFinish = (values) => {
-    console.log("Received values of form: ", values);
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const onFinish = async (values) => {
+    const { username, password } = values;
+    try {
+      setIsLoading(true);
+      const response = await authApi.login(username, password);
+
+      if (response?.data && response?.statusCode === 201) {
+        console.log(response);
+        localStorage.setItem("access_token", response.data.access_token);
+
+        message.success("Đăng ký tài khoản thành công!");
+        navigate("/");
+      } else {
+        notification.error({
+          message: "Có lỗi xảy ra",
+          description: "Thông tin đăng nhập chính xác, vui lòng kiểm tra lại",
+          duration: 4,
+        });
+      }
+    } catch (error) {
+      console.log(`Đã xảy ra lỗi, vui lòng kiểm tra lại Dev, `, error);
+    }
+    setIsLoading(false);
   };
 
   return (
@@ -19,6 +45,7 @@ const LoginPage = () => {
           initialValues={{
             remember: true,
           }}
+          autoComplete="true"
           onFinish={onFinish}
         >
           <Form.Item
@@ -26,13 +53,13 @@ const LoginPage = () => {
             rules={[
               {
                 required: true,
-                message: "Please input your Username!",
+                message: "Please input your Email!",
               },
             ]}
           >
             <Input
               prefix={<UserOutlined className="site-form-item-icon" />}
-              placeholder="Username"
+              placeholder="Email or username"
             />
           </Form.Item>
           <Form.Item
@@ -50,18 +77,14 @@ const LoginPage = () => {
               placeholder="Password"
             />
           </Form.Item>
-          <Form.Item>
-            <Form.Item name="remember" valuePropName="checked" noStyle>
-              <Checkbox>Remember me</Checkbox>
-            </Form.Item>
-
-            <a className="login-form-forgot" href="">
-              Forgot password
-            </a>
-          </Form.Item>
 
           <Form.Item>
-            <Button type="primary" htmlType="submit" className={classes.button}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              className={classes.button}
+              loading={isLoading}
+            >
               Đăng nhập
             </Button>
             <Divider orientation="center" plain>

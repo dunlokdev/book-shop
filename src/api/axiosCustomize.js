@@ -4,9 +4,7 @@ const baseUrl = import.meta.env.VITE_BACKEND_URL;
 
 const instance = axios.create({
   baseURL: baseUrl,
-  headers: {
-    "Content-Type": "application/json",
-  },
+  withCredentials: "true",
 });
 
 // Add a request interceptor
