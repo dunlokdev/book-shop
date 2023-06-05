@@ -11,9 +11,10 @@ const LoginPage = () => {
   return (
     <div className={classes.wrapper}>
       <div className={classes.container}>
-        <h3 className={classes.title}>Xin chào, ..</h3>
+        <h3 className={classes.title}>Đăng nhập</h3>
         <Form
           name="normal_login"
+          style={{ maxWidth: 280, width: 280 }}
           className={classes.loginForm}
           initialValues={{
             remember: true,
@@ -67,9 +68,8 @@ const LoginPage = () => {
               {" "}
               Or{" "}
             </Divider>
-            <Link to="/register" className={classes.center}>
-              Đăng ký ngay!
-            </Link>
+            Chưa có tài khoản,
+            <Link to="/register"> đăng ký ngay!</Link>
           </Form.Item>
         </Form>
       </div>

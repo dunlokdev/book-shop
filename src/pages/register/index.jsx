@@ -1,14 +1,38 @@
-import { Button, Divider, Form, Input } from "antd";
+import { Button, Divider, Form, Input, message, notification } from "antd";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import authApi from "../../api/auth";
 import classes from "./register.module.css";
 
-const onFinish = (values) => {
-  console.log("Success:", values);
-};
 const onFinishFailed = (errorInfo) => {
   console.log("Failed:", errorInfo);
 };
-
 const Register = () => {
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const onFinish = async (values) => {
+    try {
+      setIsLoading(true);
+      const response = await authApi.register(values);
+      if (response?.data?._id) {
+        message.success("Đăng ký tài khoản thành công!");
+        navigate("/login");
+      } else {
+        notification.error({
+          message: "Có lỗi xảy ra",
+          description: Array.isArray(response.message)
+            ? response.message[0]
+            : response.message,
+          duration: 4,
+        });
+      }
+    } catch (error) {
+      console.log(`Đã xảy ra lỗi, vui lòng kiểm tra lại Dev, `, error);
+    }
+    setIsLoading(false);
+  };
+
   return (
     <div className={classes.wrapper}>
       <div className={classes.container}>
@@ -17,13 +41,12 @@ const Register = () => {
         <Divider />
         <Form
           name="basic"
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 17 }}
-          style={{ maxWidth: 600 }}
+          layout="vertical"
+          style={{ minWidth: 400, width: 400 }}
           initialValues={{ remember: true }}
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}
-          autoComplete="off"
+          autoComplete="on"
         >
           <Form.Item
             label="Họ và tên"
@@ -66,11 +89,25 @@ const Register = () => {
             <Input placeholder="091 115 8687" />
           </Form.Item>
 
-          <Form.Item wrapperCol={{ offset: 9, span: 16 }}>
-            <Button type="primary" htmlType="submit">
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              style={{ width: "100%" }}
+              loading={isLoading ? true : false}
+            >
               Đăng ký
             </Button>
           </Form.Item>
+          <Divider>
+            <Link
+              to="/login"
+              className={classes.login}
+              style={{ fontSize: 14 }}
+            >
+              Bạn đã có tài khoản, đăng nhập tại đây
+            </Link>
+          </Divider>
         </Form>
       </div>
     </div>
