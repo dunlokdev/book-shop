@@ -1,4 +1,10 @@
+import "./footer.scss";
+
 const Footer = () => {
-  return <div>Footer</div>;
+  return (
+    <footer>
+      <div>Have a good day! &copy; by Dunlokdev</div>
+    </footer>
+  );
 };
 export default Footer;

@@ -20,7 +20,6 @@ const LoginPage = () => {
       const response = await authApi.login(username, password);
 
       if (response?.data && response?.statusCode === 201) {
-        console.log(response);
         localStorage.setItem("access_token", response.data.access_token);
         dispatch(doLoginAction(response.data.user));
         message.success("Đăng ký tài khoản thành công!");

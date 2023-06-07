@@ -12,8 +12,10 @@ const authApi = {
   },
 
   fetchAccount() {
-    const url = "/api/v1/auth/account";
-    return instance.get(url);
+    return instance.get("/api/v1/auth/account");
+  },
+  logout() {
+    return instance.post("/api/v1/auth/logout");
   },
 };
 
