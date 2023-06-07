@@ -4,9 +4,13 @@ import { Link, useNavigate } from "react-router-dom";
 import classes from "./login.module.css";
 import { useState } from "react";
 import authApi from "../../api/auth";
+import { useDispatch } from "react-redux";
+import { doLoginAction } from "../../redux/account/accountSlice";
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const [isLoading, setIsLoading] = useState(false);
 
   const onFinish = async (values) => {
@@ -18,7 +22,7 @@ const LoginPage = () => {
       if (response?.data && response?.statusCode === 201) {
         console.log(response);
         localStorage.setItem("access_token", response.data.access_token);
-
+        dispatch(doLoginAction(response.data.user));
         message.success("Đăng ký tài khoản thành công!");
         navigate("/");
       } else {
