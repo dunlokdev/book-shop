@@ -9,18 +9,20 @@ const instance = axios.create({
   withCredentials: true,
 });
 
-console.log(`Bearer ${localStorage.getItem("access_token")}`);
-
 instance.defaults.headers.common[
   "Authorization"
 ] = `Bearer ${localStorage.getItem("access_token")}`;
 
+const handleRefreshToken = async () => {
+  const res = await instance.get("/api/v1/auth/refresh");
+  if (res && res.data) return res.data.access_token;
+
+  return null;
+};
+
 // Add a request interceptor
 instance.interceptors.request.use(
   function (config) {
-    console.log(localStorage.getItem("access_token"));
-    console.log("🚀 ~ config:", config);
-
     // Do something before request is sent
     return config;
   },
@@ -30,6 +32,8 @@ instance.interceptors.request.use(
   }
 );
 
+const NO_RETRY_HEADER = "x-no-retry";
+
 // Add a response interceptor
 instance.interceptors.response.use(
   function (response) {
@@ -37,9 +41,38 @@ instance.interceptors.response.use(
     // Do something with response data
     return response && response.data ? response.data : response;
   },
-  function (error) {
+  async function (error) {
     // Any status codes that falls outside the range of 2xx cause this function to trigger
     // Do something with response error
+
+    if (
+      error.config &&
+      error.response &&
+      +error.response.status === 401 &&
+      !error.config.headers[NO_RETRY_HEADER]
+    ) {
+      const access_token = await handleRefreshToken();
+      error.config.headers[NO_RETRY_HEADER] = "true"; // string val only
+      if (access_token) {
+        error.config.headers["Authorization"] = `Bearer ${access_token}`;
+        localStorage.setItem("access_token", access_token);
+        return instance.request(error.config);
+      }
+    }
+
+    console.log(`>>> Check config: `, error);
+
+    // Trường hợp refresh token hết hạn
+    if (
+      error.config &&
+      error.response &&
+      +error.response.status === 400 &&
+      error.config.url === "/api/v1/auth/refresh"
+    ) {
+      console.log(`Hello refresh token expired`);
+      window.location.href = "/login";
+    }
+
     return error?.response?.data ?? Promise.reject(error);
   }
 );

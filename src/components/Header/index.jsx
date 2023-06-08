@@ -18,7 +18,6 @@ const Header = () => {
   const dispatch = useDispatch();
 
   const onClick = ({ key }) => {
-    message.info(`Click on item ${key}`);
     if (key === "logout") {
       handleLogout();
     }
